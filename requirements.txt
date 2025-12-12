@@ -5,3 +5,8 @@ matplotlib
 scikit-learn
 jupyter
 scipy
+tensorflow
+tensorflow-datasets
+keras
+keras-tuner
+keras-visualizer
