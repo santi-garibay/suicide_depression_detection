@@ -23,3 +23,4 @@ __pycache__/
 # Archivos temporales
 *.log
 *.tmp
+my_dir/
