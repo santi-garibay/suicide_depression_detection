@@ -35,6 +35,29 @@ def preprocess_text(text):
 # Load VADER once
 analyzer = SentimentIntensityAnalyzer()
 
+# --- NUEVA FUNCIÓN AGREGADA (Analyze Normal) ---
+def analyze_text(text_input):
+    """
+    Análisis estándar: Solo usa el modelo entrenado (TF-IDF + ML).
+    No utiliza VADER ni reglas de ensemble.
+    """
+    # 1. PREPROCESSING
+    cleaned_text = preprocess_text(text_input)
+    vectorized_text = vectorizer.transform([cleaned_text])
+    
+    # 2. PREDICTION
+    try:
+        suicide_prob = model.predict_proba(vectorized_text)[0][1]
+    except:
+        # Fallback for models without predict_proba
+        input_data = vectorized_text.toarray()
+        pred_raw = model.predict(input_data)
+        suicide_prob = float(pred_raw[0]) # Convert single prediction to float
+
+    # Retorna la probabilidad y una razón genérica
+    return suicide_prob, "Standard ML Model"
+
+# --- FUNCIÓN ROBUSTA (Analyze Robust) ---
 def analyze_robust(text_input):
     # 1. PREPROCESSING AND BASE MODEL (Your TF-IDF)
     cleaned_text = preprocess_text(text_input)
@@ -105,8 +128,9 @@ with tab1:
     
     if st.button("Analyze Text"):
         if user_input:
-            # 1. Unpack the two values
-            p, reason = analyze_robust(user_input) 
+            # NOTA: Aquí estás llamando a analyze_text (la función simple)
+            # Si quieres usar la robusta, cambia esto a analyze_robust(user_input) manualmente
+            p, reason = analyze_text(user_input) 
             
             st.divider()
             
@@ -152,7 +176,8 @@ with tab2:
                     st.info(f'"{transcription}"')
                     
                     # 3. Analyze
-                    p, reason = analyze_robust(transcription) 
+                    # NOTA: Igualmente aquí estás usando analyze_text
+                    p, reason = analyze_text(transcription) 
                     
                     st.divider()
                     st.subheader("Model Result:")
